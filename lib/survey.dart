@@ -12,7 +12,7 @@ class Survey extends StatelessWidget {
 
   final List<Map<String, Object>> questions;
   final int selectedQuestion;
-  final void Function() answer;
+  final void Function(int) answer;
 
   bool get hasSelectedQuestion {
     return selectedQuestion < questions.length;
@@ -20,14 +20,18 @@ class Survey extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> answers = hasSelectedQuestion
-        ? questions[selectedQuestion].cast()['answers']
+    List<Map<String, Object>> answers = hasSelectedQuestion
+        ? questions[selectedQuestion]['answers'] as List<Map<String, Object>>
         : [];
 
     return Column(
       children: [
         Question(text: questions[selectedQuestion]['text'].toString()),
-        ...answers.map((t) => Answer(text: t, onPressed: answer)).toList(),
+        ...answers
+            .map((resp) => Answer(
+                text: resp['text'] as String,
+                onPressed: () => answer(int.parse(resp['value'].toString()))))
+            .toList(),
       ],
     );
   }
